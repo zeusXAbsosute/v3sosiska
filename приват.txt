@@ -1,0 +1,1819 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+
+local screenGui = Instance.new("ScreenGui")
+local textLabel = Instance.new("TextLabel")
+
+
+textLabel.Parent = screenGui
+textLabel.Text = player.Name .. " Спасибо за использование SosiskaHub VIP🌭 Work by Zeus? | Volmer "
+textLabel.Size = UDim2.new(0, 400, 0, 50)
+textLabel.Position = UDim2.new(0.5, -200, 0.5, -25)
+textLabel.TextColor3 = Color3.fromRGB(255, 255, 255) 
+textLabel.BackgroundTransparency = 1 
+textLabel.Font = Enum.Font.GothamBold
+textLabel.TextSize = 24
+textLabel.TextStrokeTransparency = 0 
+
+
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+
+wait(5)
+screenGui:Destroy()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Sosiska Hack VIP🌭",
+    LoadingTitle = "SosiskaHub",
+    LoadingSubtitle = "Work by Zeus? | Volmer",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "Work by Zeus?",
+        FileName = "Sosiski"
+    },
+    Theme = {
+    
+    TextColor = Color3.fromRGB(240, 240, 240),
+
+    Background = Color3.fromRGB(0, 128, 128),  
+    Topbar = Color3.fromRGB(0, 100, 100),      
+    Shadow = Color3.fromRGB(0, 80, 80),         
+
+    NotificationBackground = Color3.fromRGB(20, 20, 20),
+    NotificationActionsBackground = Color3.fromRGB(230, 230, 230),
+
+    TabBackground = Color3.fromRGB(0, 150, 150), 
+    TabStroke = Color3.fromRGB(0, 160, 160),   
+    TabBackgroundSelected = Color3.fromRGB(0, 255, 255),
+    TabTextColor = Color3.fromRGB(240, 240, 240),
+    SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
+
+    ElementBackground = Color3.fromRGB(20, 130, 130),
+    ElementBackgroundHover = Color3.fromRGB(0, 170, 170), 
+    SecondaryElementBackground = Color3.fromRGB(25, 25, 25),
+    ElementStroke = Color3.fromRGB(50, 150, 150), 
+    SecondaryElementStroke = Color3.fromRGB(40, 160, 160),
+
+    SliderBackground = Color3.fromRGB(0, 200, 200),
+    SliderProgress = Color3.fromRGB(0, 230, 230),   
+    SliderStroke = Color3.fromRGB(0, 240, 240),     
+
+    ToggleBackground = Color3.fromRGB(30, 30, 30),
+    ToggleEnabled = Color3.fromRGB(0, 200, 200),   
+    ToggleDisabled = Color3.fromRGB(100, 100, 100),
+    ToggleEnabledStroke = Color3.fromRGB(0, 220, 220),
+    ToggleDisabledStroke = Color3.fromRGB(125, 125, 125),
+    ToggleEnabledOuterStroke = Color3.fromRGB(100, 100, 100),
+    ToggleDisabledOuterStroke = Color3.fromRGB(65, 65, 65),
+
+    DropdownSelected = Color3.fromRGB(0, 150, 150),
+    DropdownUnselected = Color3.fromRGB(40, 40, 40),
+
+    InputBackground = Color3.fromRGB(30, 30, 30),
+    InputStroke = Color3.fromRGB(65, 65, 65),
+    PlaceholderColor = Color3.fromRGB(178, 255, 255) 
+
+
+    },
+
+KeySystem = true , 
+	KeySettings = {
+		Title = "SosiskaHub",
+		Subtitle = "Key System",
+		Note = "key prosim kto dal script",
+		SaveKey = false,
+		Key = ""
+	}
+})
+local MainTab = Window:CreateTab("Main")
+local SuperSpamTab = Window:CreateTab("SuperSpam")
+local WeaponsTab = Window:CreateTab("Weapons")
+local BOMBTab = Window:CreateTab("Bomb")
+local BaseTab = Window:CreateTab("Base")
+local ScriptsTab = Window:CreateTab("Other Scripts")
+local settingsTab = Window:CreateTab("Settings")
+
+
+
+
+local masterToggle = true  
+local isRPGSpamEnabled = false  
+local rocketsToFire = 500000  
+local LocalPlayer = game.Players.LocalPlayer  
+local RocketSystem, FireRocket, FireRocketClient
+local rocketNumber = 1  
+local targetHead
+local whitelistedPlayers = {}
+
+
+local function updatePlayerList()
+    local playerList = {}
+    local Players = game:GetService("Players") 
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            table.insert(playerList, player.Name)
+        end
+    end
+    return playerList
+end
+
+local playerListDropdown = MainTab:CreateDropdown({
+    Name = "Whitelist",
+    Options = updatePlayerList(),
+    MultipleOptions = true,
+    Callback = function(selectedPlayers)
+        whitelistedPlayers = selectedPlayers 
+    end
+})
+
+
+local function isPlayerWhitelisted(playerName)
+    for _, name in ipairs(whitelistedPlayers) do
+        if name == playerName then
+            return true
+        end
+    end
+    return false
+end
+
+
+local function getPlayersInRange(range)
+    local playersInRange = {}
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local distance = (player.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).magnitude
+            if distance <= range then
+                table.insert(playersInRange, player)
+            end
+        end
+    end
+    return playersInRange
+end
+
+
+local function startRPGSpam()
+    if not masterToggle or not isRPGSpamEnabled then return end
+
+    if not RocketSystem then
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        RocketSystem = ReplicatedStorage:WaitForChild("RocketSystem")
+        FireRocket = RocketSystem:WaitForChild("Events"):WaitForChild("FireRocket")
+        FireRocketClient = RocketSystem:WaitForChild("Events"):WaitForChild("FireRocketClient")
+    end
+
+    local function getActiveWeapon()
+        local validWeapons = {"RPG", "Javelin", "Stinger"}
+        for _, weaponName in ipairs(validWeapons) do
+            local weapon = workspace[LocalPlayer.Name]:FindFirstChild(weaponName)
+            if weapon and weapon:IsA("Tool") and weapon.Parent == workspace[LocalPlayer.Name] then
+                return weaponName
+            end
+        end
+        return nil
+    end
+    
+    local activeWeapon = getActiveWeapon()
+    if not activeWeapon then return end
+
+    local playersInRange = getPlayersInRange(40000) 
+
+    for _, targetPlayer in ipairs(playersInRange) do
+        if not isRPGSpamEnabled then return end
+        
+        if isPlayerWhitelisted(targetPlayer.Name) then  
+            continue  
+        end
+
+        local targetPosition = targetPlayer.Character.HumanoidRootPart.Position
+        local directionToTarget = (targetPosition - LocalPlayer.Character.Head.Position).unit
+        targetHead = targetPlayer.Character.Head 
+
+        FireRocket:InvokeServer(directionToTarget, workspace[LocalPlayer.Name][activeWeapon], workspace[LocalPlayer.Name][activeWeapon], targetPosition)
+        
+        local RS = game:GetService("ReplicatedStorage").RocketSystem.Events
+        RS.RocketHit:FireServer(
+            targetPosition, 
+            directionToTarget, 
+            workspace[LocalPlayer.Name][activeWeapon],  
+            workspace[LocalPlayer.Name][activeWeapon], 
+            targetHead, 
+            targetHead, 
+            LocalPlayer.Name .. "Rocket" .. rocketNumber 
+        )
+        
+        rocketNumber = rocketNumber + 1 
+    end
+end
+
+
+game:GetService("RunService").Heartbeat:Connect(function()
+    if isRPGSpamEnabled then
+        startRPGSpam()
+    end
+end)
+
+
+game.Players.PlayerAdded:Connect(function()
+    playerListDropdown:UpdateOptions(updatePlayerList())
+end)
+
+game.Players.PlayerRemoving:Connect(function()
+    playerListDropdown:UpdateOptions(updatePlayerList())
+end)
+
+MainTab:CreateToggle({
+    Name = "Start SpamRocket",
+    Default = false,
+    Callback = function(value)
+        isRPGSpamEnabled = value
+        if value then
+            startRPGSpam()
+        end
+    end
+})
+
+local function checkAndDestroyObjects()
+    local freefall = game:GetService("ReplicatedStorage"):FindFirstChild("Freefall")
+    if freefall then
+        freefall:Destroy()
+        print("Freefall destroyed")
+    else
+        print("Freefall не найден")
+    end
+
+    local acsEngine = game:GetService("ReplicatedStorage"):FindFirstChild("ACS_Engine")
+    if acsEngine then
+        local events = acsEngine:FindFirstChild("Events")
+        if events then
+            local fdmg = events:FindFirstChild("FDMG")
+            if fdmg then
+                fdmg:Destroy()
+                print("FDMG destroyed")
+            else
+                print("FDMG не найден")
+            end
+        else
+            print("Events не найден в ACS_Engine")
+        end
+    else
+        print("ACS_Engine не найден в ReplicatedStorage")
+    end
+end
+
+BaseTab:CreateToggle({
+    Name = " nofaldmg",
+    CurrentValue = false,
+    Flag = "nofaldmg",
+    Callback = function(value)
+        if value then
+            print("nofaldmg включен")
+            checkAndDestroyObjects()
+        else
+            print("nofaldmg выключен")
+        end
+    end,
+})
+
+
+
+
+_G.HeadSize = 1
+_G.Disabled = true
+
+MainTab:CreateSlider({
+    Name = "Размер хитбокса ракеты",
+    Range = {1, 2000},
+    Increment = 1,
+    Suffix = "size",
+    CurrentValue = _G.HeadSize,
+    Flag = "HeadSizeSlider",
+    Callback = function(Value)
+        _G.HeadSize = Value
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Hitbox RPG",
+    Callback = function()
+        _G.Disabled = not _G.Disabled
+        if _G.Disabled then
+            print("Эффект отключен")
+        else
+            print("Эффект включен")
+        end
+    end,
+})
+
+game:GetService('RunService').RenderStepped:connect(function()
+    if not _G.Disabled then
+        for i, v in next, game:GetService('Players'):GetPlayers() do
+            if v.Name ~= game:GetService('Players').LocalPlayer.Name then
+                pcall(function()
+                    v.Character.Head.Size = Vector3.new(_G.HeadSize, _G.HeadSize, _G.HeadSize)
+                    v.Character.Head.Transparency = 1
+                    v.Character.Head.BrickColor = BrickColor.new("Red")
+                    v.Character.Head.Material = "Neon"
+                    v.Character.Head.CanCollide = true
+                    v.Character.Head.Massless = true
+                end)
+            end
+        end
+    end
+end)
+local masterToggle = true  
+local isRPGSpamEnabled = false  
+local rocketsToFire = 500000  
+local LocalPlayer = game.Players.LocalPlayer  
+local RocketSystem, FireRocket, FireRocketClient
+local launchHeight = 10
+local rocketNumber = 1  
+
+local function getActiveWeapon()
+    local validWeapons = {"RPG", "Javelin", "Stinger"}
+    for _, weaponName in ipairs(validWeapons) do
+        local weapon = workspace[LocalPlayer.Name]:FindFirstChild(weaponName)
+        if weapon and weapon:IsA("Tool") and weapon.Parent == workspace[LocalPlayer.Name] then
+            return weaponName
+        end
+    end
+    return nil
+end
+
+local function startRPGSpam()
+    if not masterToggle or not isRPGSpamEnabled then return end
+
+    if not RocketSystem then
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        RocketSystem = ReplicatedStorage:WaitForChild("RocketSystem")
+        FireRocket = RocketSystem:WaitForChild("Events"):WaitForChild("FireRocket")
+        FireRocketClient = RocketSystem:WaitForChild("Events"):WaitForChild("FireRocketClient")
+    end
+
+    local activeWeapon = getActiveWeapon()
+    if not activeWeapon then return end
+
+    local bases = {"Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "Juliet", "Kilo", "Lima", "Omega", "Romeo", "Sierra", "Tango", "Victor", "Yankee", "Zulu"}
+    local shieldFound = false
+
+    for _, baseName in ipairs(bases) do
+        local base = workspace.Tycoon.Tycoons[baseName]
+        if base then
+            local shield = base.PurchasedObjects:FindFirstChild("Base Shield")
+            if shield and shield:FindFirstChild("Shield") and shield.Shield:FindFirstChild("Shield4") then
+                shieldFound = true
+                local targetPosition = shield.Shield.Shield4.Position + Vector3.new(0, launchHeight, 0)
+                local directionToTarget = (targetPosition - LocalPlayer.Character.HumanoidRootPart.Position).unit
+
+                FireRocket:InvokeServer(directionToTarget, workspace[LocalPlayer.Name][activeWeapon], workspace[LocalPlayer.Name][activeWeapon], targetPosition)
+
+                
+                local RS = game:GetService("ReplicatedStorage").RocketSystem.Events
+                RS.RocketHit:FireServer(
+                    targetPosition, 
+                    directionToTarget, 
+                    workspace[LocalPlayer.Name][activeWeapon],  
+                    workspace[LocalPlayer.Name][activeWeapon], 
+                    shield.Shield.Shield4,  
+                    nil, 
+                    LocalPlayer.Name .. "Rocket" .. rocketNumber 
+                )
+
+                rocketNumber = rocketNumber + 1
+            end
+        end
+    end
+
+    if not shieldFound then
+        print("No shields found on any bases!")
+    end
+end
+
+game:GetService("RunService").Heartbeat:Connect(function()
+    if isRPGSpamEnabled then
+        startRPGSpam()
+    end
+end)
+MainTab:CreateToggle({
+    Name = "Destroy Shields",
+    Default = false,
+    Callback = function(value)
+        isRPGSpamEnabled = value
+        if value then
+            startRPGSpam()
+        end
+    end
+})
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+local isFiring = false
+local firingKeyPressed = false
+local isToggleEnabled = false 
+
+local function fireRocket()
+    if not isToggleEnabled then
+        return 
+    end
+    
+    local Weapon = localPlayer.Character:FindFirstChild("RPG") or localPlayer.Backpack:FindFirstChild("RPG")
+    local Mouse = localPlayer:GetMouse()
+    
+    if not localPlayer.Character or not Weapon or not Mouse.Target then
+        return
+    end
+
+    local args = {
+        [1] = Vector3.new(0, 0, 0),
+        [2] = Weapon,
+        [3] = Weapon,
+        [4] = Mouse.Hit.Position
+    }
+
+    Weapon.Parent = localPlayer.Character
+    local RN = tostring(game.ReplicatedStorage.RocketSystem.Events.FireRocket:InvokeServer(unpack(args)))
+    Weapon.Parent = localPlayer.Backpack
+
+    local hitArgs = {
+        [1] = Mouse.Hit.Position,
+        [2] = Vector3.new(0, 0, 0),
+        [3] = Weapon,
+        [4] = Weapon,
+        [5] = Mouse.Target,
+        [6] = localPlayer.Name.."Rocket"..RN 
+    }
+
+    game.ReplicatedStorage.RocketSystem.Events.RocketHit:FireServer(unpack(hitArgs))
+end
+
+local function startFiring()
+    if not isToggleEnabled then return end 
+
+    if not isFiring then
+        isFiring = true
+        task.spawn(function()
+            while isFiring and isToggleEnabled do 
+                fireRocket() 
+                task.wait() 
+            end
+        end)
+    end
+end
+
+local function stopFiring()
+    isFiring = false
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.G and not gameProcessed then
+        firingKeyPressed = true
+        startFiring() 
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.G and not gameProcessed then
+        firingKeyPressed = false
+        stopFiring() 
+    end
+end)
+
+MainTab:CreateToggle({
+    Name = "RPG CLICK",
+    Default = false,
+    Callback = function(value)
+        isToggleEnabled = value 
+        if not value then
+            stopFiring() 
+        end
+    end
+})
+
+local UserInputService = game:GetService("UserInputService")
+
+local masterToggle = false  
+
+
+MainTab:CreateToggle({
+    Name = "Включить QuickLag RPG",
+    Default = false,
+    Callback = function(value)
+        masterToggle = value
+    end,
+})
+
+local function startQuickLagRPG()
+    if not masterToggle then return end 
+    local camera = workspace.CurrentCamera
+    local playerName = game.Players.LocalPlayer.Name
+    local repeatCount = 500
+
+    local validWeapons = {"RPG", "Javelin", "Stinger"}
+
+    local function getActiveWeapon()
+        for _, weaponName in ipairs(validWeapons) do
+            local weapon = workspace[playerName]:FindFirstChild(weaponName)
+            if weapon and weapon:IsA("Tool") and weapon.Parent == workspace[playerName] then
+                return weaponName
+            end
+        end
+        return nil
+    end
+
+    local function fireQuickLagRocket(weaponName)
+        if not weaponName then return end
+
+        local fireRocketVector = camera.CFrame.LookVector
+        local fireRocketPosition = camera.CFrame.Position
+
+        game:GetService("ReplicatedStorage").RocketSystem.Events.FireRocket:InvokeServer(
+            fireRocketVector, 
+            workspace[playerName][weaponName], 
+            workspace[playerName][weaponName], 
+            fireRocketPosition
+        )
+
+        local fireRocketClientTable = {
+            ["expShake"] = {["fadeInTime"] = 0.05, ["magnitude"] = 3, ["rotInfluence"] = {0.4, 0, 0.4}, ["fadeOutTime"] = 0.5, ["posInfluence"] = {1, 1, 0}, ["roughness"] = 3},
+            ["gravity"] = Vector3.new(0, -20, 0), 
+            ["HelicopterDamage"] = 450, 
+            ["FireRate"] = 15, 
+            ["VehicleDamage"] = 350, 
+            ["ExpName"] = "Rocket",
+            ["RocketAmount"] = 1, 
+            ["ExpRadius"] = 12, 
+            ["BoatDamage"] = 300, 
+            ["TankDamage"] = 300, 
+            ["Acceleration"] = 8, 
+            ["ShieldDamage"] = 11170,
+            ["Distance"] = 4000, 
+            ["PlaneDamage"] = 500, 
+            ["GunshipDamage"] = 170, 
+            ["velocity"] = 600, 
+            ["ExplosionDamage"] = 120
+        }
+
+        local fireRocketClientInstance = game:GetService("ReplicatedStorage").RocketSystem.Rockets["RPG Rocket"]
+        game:GetService("ReplicatedStorage").RocketSystem.Events.FireRocketClient:Fire(
+            camera.CFrame.Position, 
+            camera.CFrame.LookVector, 
+            fireRocketClientTable, 
+            fireRocketClientInstance, 
+            workspace[playerName][weaponName], 
+            workspace[playerName][weaponName], 
+            game.Players.LocalPlayer, 
+            nil, 
+            { [1] = workspace[playerName]:FindFirstChild(weaponName) }
+        )
+    end
+
+    local activeWeapon = getActiveWeapon()
+    
+    if activeWeapon then
+        for i = 1, repeatCount do
+            task.spawn(fireQuickLagRocket, activeWeapon) 
+        end
+    else
+        warn("No active weapon: RPG | JAVELIN | STINGER")
+    end
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    if not gameProcessedEvent and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.G then
+        startQuickLagRPG()  
+    end
+end)
+
+
+local UserInputService = game:GetService("UserInputService")
+
+local masterToggle = false  
+
+
+MainTab:CreateToggle({
+    Name = "Включить ракеты pr206",
+    Default = false,
+    Callback = function(value)
+        masterToggle = value
+    end,
+})
+local function startQuickLagRPG()
+    if not masterToggle then return end 
+    local camera = workspace.CurrentCamera
+    local playerName = game.Players.LocalPlayer.Name
+    local repeatCount = 4
+
+    local validWeapons = {"RPG", "Javelin", "Stinger"}
+
+    local function getActiveWeapon()
+        for _, weaponName in ipairs(validWeapons) do
+            local weapon = workspace[playerName]:FindFirstChild(weaponName)
+            if weapon and weapon:IsA("Tool") and weapon.Parent == workspace[playerName] then
+                return weaponName
+            end
+        end
+        return nil
+    end
+
+    local function fireQuickLagRocket(weaponName)
+        if not weaponName then return end
+
+        local fireRocketVector = camera.CFrame.LookVector
+        local fireRocketPosition = camera.CFrame.Position
+
+        game:GetService("ReplicatedStorage").RocketSystem.Events.FireRocket:InvokeServer(
+            fireRocketVector, 
+            workspace[playerName][weaponName], 
+            workspace[playerName][weaponName], 
+            fireRocketPosition
+        )
+
+        local fireRocketClientTable = {
+            ["expShake"] = {["fadeInTime"] = 0.05, ["magnitude"] = 3, ["rotInfluence"] = {0.4, 0, 0.4}, ["fadeOutTime"] = 0.5, ["posInfluence"] = {1, 1, 0}, ["roughness"] = 3},
+            ["gravity"] = Vector3.new(0, -20, 0), 
+            ["HelicopterDamage"] = 450, 
+            ["FireRate"] = 1000, 
+            ["VehicleDamage"] = 350, 
+            ["ExpName"] = "Rocket",
+            ["RocketAmount"] = 1, 
+            ["ExpRadius"] = 12, 
+            ["BoatDamage"] = 300, 
+            ["TankDamage"] = 300, 
+            ["Acceleration"] = 8, 
+            ["ShieldDamage"] = 11170,
+            ["Distance"] = 4000, 
+            ["PlaneDamage"] = 500, 
+            ["GunshipDamage"] = 170, 
+            ["velocity"] = 300, 
+            ["ExplosionDamage"] = 120
+        }
+
+        local fireRocketClientInstance = game:GetService("ReplicatedStorage").RocketSystem.Rockets["Pr. 206 Rocket"]
+        game:GetService("ReplicatedStorage").RocketSystem.Events.FireRocketClient:Fire(
+            camera.CFrame.Position, 
+            camera.CFrame.LookVector, 
+            fireRocketClientTable, 
+            fireRocketClientInstance, 
+            workspace[playerName][weaponName], 
+            workspace[playerName][weaponName], 
+            game.Players.LocalPlayer, 
+            nil, 
+            { [1] = workspace[playerName]:FindFirstChild(weaponName) }
+        )
+    end
+
+    local activeWeapon = getActiveWeapon()
+    
+    if activeWeapon then
+        for i = 1, repeatCount do
+            task.spawn(fireQuickLagRocket, activeWeapon) 
+        end
+    else
+        warn("No active weapon: RPG | JAVELIN | STINGER")
+    end
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    if not gameProcessedEvent and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.G then
+        startQuickLagRPG()  
+    end
+end) 
+
+local enableMasterToggle =  true
+local antiLagConnection
+local rocketsEnabled = false 
+
+
+local function toggleRockets(value)
+    if not enableMasterToggle then
+        if antiLagConnection then
+            antiLagConnection:Disconnect()
+            antiLagConnection = nil
+        end
+        return
+    end
+
+    if value then
+        local visualRocketsFolder = workspace:WaitForChild("VisualRockets")
+
+        
+        for _, object in ipairs(visualRocketsFolder:GetChildren()) do
+            object:Destroy()
+        end
+
+        
+        antiLagConnection = visualRocketsFolder.ChildAdded:Connect(function(newObject)
+            newObject:Destroy()
+        end)
+
+    else
+        if antiLagConnection then
+            antiLagConnection:Disconnect()
+            antiLagConnection = nil
+        end
+    end
+end
+local P = game.Players.LocalPlayer
+local M = P:GetMouse()
+local C = workspace.CurrentCamera
+local RS = game:GetService("ReplicatedStorage").RocketSystem.Events
+local RC = 0
+local isFiring = false  
+
+local function FireRocket(TP, TPArt)
+    local D = (TP - C.CFrame.Position).unit * 1000
+    local W = P.Backpack:FindFirstChild("Stinger") or P.Character:FindFirstChild("Stinger")
+    if W then
+        RS.FireRocket:InvokeServer(D, W, W, TP, nil, nil)
+        if TPArt then
+            RS.RocketHit:FireServer(TP, D, W, W, TPArt, "Rocket" .. RC, nil)
+        end
+        RC += 1
+    else
+        warn("Stinger not found!")
+    end
+end
+
+local function FireRocketsInCircle(center, radius, count)
+    for i = 0, count - 1 do
+        local angle = (i / count) * (2 * math.pi)
+        local x = center.X + radius * math.cos(angle)
+        local z = center.Z + radius * math.sin(angle)
+        local position = Vector3.new(x, center.Y, z)
+
+        task.spawn(FireRocket, position, M.Target or workspace.Terrain)
+    end
+end
+
+local function FireAllRockets(configurations)
+    for _, config in ipairs(configurations) do
+        FireRocketsInCircle(M.Hit.Position, config.radius, config.count)
+        task.wait() 
+    end
+end
+
+M.Button1Down:Connect(function()
+    if M.Hit and isFiring then
+        local configurations = {
+            {radius = 10, count = 46},
+            {radius = 20, count = 56},
+            {radius = 30, count = 66},
+            {radius = 40, count = 76},
+            {radius = 50, count = 86},
+            {radius = 60, count = 96},
+            {radius = 70, count = 106},
+            {radius = 80, count = 116},
+            {radius = 90, count = 126},
+            {radius = 100, count = 136},
+        }
+
+        FireAllRockets(configurations)
+    else
+        
+    end
+end)
+
+BOMBTab:CreateToggle({
+    Name = "Circle bomb",
+    Default = isFiring,
+    Callback = function(value)
+        isFiring = value 
+        if isFiring then
+            print("Rocket firing enabled.")
+        else
+            print("Rocket firing disabled.")
+        end
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Antilag",
+    Callback = function()
+        rocketsEnabled = not rocketsEnabled
+        toggleRockets(rocketsEnabled) 
+    end,
+})
+
+
+BaseTab:CreateDropdown({
+   Name = "Select Base",
+   Options = {"Select Base","Alpha","Bravo","Charlie","Delta","Echo","Foxtrot","Golf","Hotel","Juliet","Kilo","Lima","Omega","Romeo","Sierra","Tango","Victor","Yankee","Zulu"},
+   CurrentOption = {"Select Base"},
+   MultipleOptions = false,
+   Flag = "Dropdown1", 
+   Callback = function(Options)
+   	for _, value in ipairs(Options) do
+            print(value)
+            BTP = value
+        end
+    end,
+})
+
+BaseTab:CreateButton({
+	Name = "Teleport to selected Base",
+	Callback = function()
+	if BTP == "Alpha" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1099.08374, 72.0714035, -4610.33643, 0.972942889, 0.00347443926, 0.231019497, -9.25238552e-09, 0.99988693, -0.0150378533, -0.231045619, 0.0146309715, 0.972832918)
+            elseif BTP == "Bravo" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-18.673843, 71.9703369, -4718.31152, 0.999959052, -0.000772632658, 0.00901635364, 9.41616474e-09, 0.996348619, 0.0853784233, -0.00904939789, -0.0853749216, 0.99630779)
+            elseif BTP == "Charlie" then
+				game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(786.673828, 74.358429, -4535.45166, 0.970290065, 0.0110541843, -0.241692007, 8.54569837e-09, 0.998955727, 0.0456889272, 0.241944671, -0.0443315133, 0.969276786)
+			elseif BTP == "Delta" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1926.06055, 74.4656906, -3823.44141, 0.679933846, -0.0224574078, -0.732929468, 1.31147071e-09, 0.999530911, -0.0306262393, 0.733273447, 0.0208238158, 0.679614902)
+            elseif BTP == "Echo" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2589.22876, 74.3271408, -2908.73779, 0.453967661, 0.0124620507, -0.89093101, 8.19461921e-09, 0.999902189, 0.0139863081, 0.891018152, -0.00634933868, 0.453923255)
+            elseif BTP == "Foxtrot" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2854.14111, 73.8452911, -1757.13916, 0.0411529616, -0.00535943639, -0.999138474, 8.62091643e-09, 0.999985635, -0.00536397984, 0.999152839, 0.000220735048, 0.0411523692)
+            elseif BTP == "Golf" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3179.06763, 73.9208221, -531.381958, -0.016778525, 0.190717876, -0.98150146, 8.93375063e-09, 0.981639683, 0.190744728, 0.999859214, 0.00320040644, -0.0164704677)
+            elseif BTP == "Hotel" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3098.63696, 73.897316, 581.313782, -0.198365912, -0.00420259917, -0.98011905, 8.46591952e-09, 0.999990821, -0.00428780774, 0.98012805, -0.00085056317, -0.198364079)
+            elseif BTP == "Juliet" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2760.15625, 74.0659943, 1788.85693, -0.248037308, 0.0213610344, -0.968514919, 9.51288026e-09, 0.999756873, 0.0220500864, 0.968750477, 0.00546923513, -0.247977003)
+            elseif BTP == "Kilo" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2384.13428, 75.6838531, 2852.6875, -0.512664318, 0.0558174625, -0.85677284, -6.84471813e-09, 0.997884572, 0.0650106817, 0.858589113, 0.0333286636, -0.511579812)
+            elseif BTP == "Lima" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(778.702393, 74.0329361, 3388.71753, -0.35578385, -0.0381601006, -0.933788896, -7.20699278e-09, 0.999166012, -0.0408317931, 0.934568286, -0.0145272855, -0.355487138)
+            elseif BTP == "Omega" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-354.283325, 74.0413818, 3743.00928, -0.999316514, 0.00143077585, -0.0369386375, -8.53127435e-09, 0.99925065, 0.0387050621, 0.0369663388, 0.0386786088, -0.9985677)
+            elseif BTP == "Romeo" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1425.44287, 74.4657135, 3527.26978, -0.894455016, 0.00816715322, 0.447083354, -6.56779209e-09, 0.999833167, -0.0182645973, -0.447157949, -0.0163368639, -0.894305825)
+            elseif BTP == "Sierra" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2413.13525, 74.2920074, 2381.47168, -0.686560214, -0.0238456037, 0.726681828, 1.36900535e-08, 0.999462068, 0.0327967256, -0.727072954, 0.0225169361, -0.686190844)
+            elseif BTP == "Tango" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2878.13477, 74.4595642, 1349.40808, -0.575268865, 0.0276870616, 0.817495644, 1.1736037e-08, 0.999426961, -0.033848729, -0.817964375, -0.019472111, -0.574939251)
+            elseif BTP == "Victor" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-3435.20654, 74.0940094, 509.059113, -0.474986166, -0.0906744748, 0.875309229, 1.78062383e-08, 0.994677246, 0.103039972, -0.87999326, 0.0489425734, -0.472457916)
+            elseif BTP == "Yankee" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-3777.43506, 71.8749008, -368.703583, -0.240541101, -0.0552883558, 0.969063044, 9.39543376e-09, 0.998376429, 0.0569607876, -0.970638931, 0.0137014193, -0.240150556)
+            elseif BTP == "Zulu" then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-3855.55566, 72.212326, -1365.77698, -0.00904913805, 0.0214897227, 0.999728143, 8.36807157e-09, 0.999769032, -0.0214906037, -0.999959052, -0.000194463064, -0.00904704817)
+            end 
+		end,
+})
+local bases = {
+    ["Alpha"] = CFrame.new(-1099.08374, 72.0714035, -4610.33643),
+    ["Bravo"] = CFrame.new(-18.673843, 71.9703369, -4718.31152),
+    ["Charlie"] = CFrame.new(786.673828, 74.358429, -4535.45166),
+    ["Delta"] = CFrame.new(1926.06055, 74.4656906, -3823.44141),
+    ["Echo"] = CFrame.new(2589.22876, 74.3271408, -2908.73779),
+    ["Foxtrot"] = CFrame.new(2854.14111, 73.8452911, -1757.13916),
+    ["Golf"] = CFrame.new(3179.06763, 73.9208221, -531.381958),
+    ["Hotel"] = CFrame.new(3098.63696, 73.897316, 581.313782),
+    ["Juliet"] = CFrame.new(2760.15625, 74.0659943, 1788.85693),
+    ["Kilo"] = CFrame.new(2384.13428, 75.6838531, 2852.6875),
+    ["Lima"] = CFrame.new(778.702393, 74.0329361, 3388.71753),
+    ["Omega"] = CFrame.new(-354.283325, 74.0413818, 3743.00928),
+    ["Romeo"] = CFrame.new(-1425.44287, 74.4657135, 3527.26978),
+    ["Sierra"] = CFrame.new(400, 75, 1500),
+    ["Tango"] = CFrame.new(-2000, 75, 1000),
+    ["Victor"] = CFrame.new(-3000, 75, 3000),
+    ["Yankee"] = CFrame.new(-4500, 75, 6000),
+    ["Zulu"] = CFrame.new(-5000, 75, 7000)
+}
+
+local selectedBase = "Alpha" 
+
+WeaponsTab:CreateButton({
+	Name = "No Recoil / No Spread ",
+	Callback = function()
+		-- BGun = Better Guns
+		local function BGun(gun)
+			if game.Players.LocalPlayer.Backpack:FindFirstChild(gun) then
+				game.Players.LocalPlayer.Backpack[gun]:SetAttribute("HRecoil", Vector2.new(0, 0))
+				game.Players.LocalPlayer.Backpack[gun]:SetAttribute("VRecoil", Vector2.new(0, 0))
+				game.Players.LocalPlayer.Backpack[gun]:SetAttribute("MaxSpread", 0)
+				game.Players.LocalPlayer.Backpack[gun]:SetAttribute("MinSpread", 0)
+				game.Players.LocalPlayer.Backpack[gun]:SetAttribute("SwayBase", 0)
+			end
+		end
+
+		BGun("RPG")
+		BGun("Javelin")
+		BGun("Remington MSR")
+		BGun("M40 Sniper")
+		BGun("Kar98K")
+		BGun("M1903 Springfield")
+		BGun("Barrett M82")
+		BGun("AWP")
+		BGun("M200 Intervention")
+		BGun("CS5 Sniper")
+		BGun("Explosive Sniper")
+		BGun("Dragunov SVD")
+		BGun("VSS Vintorez")
+		BGun("M110 Rifle")
+		BGun("Gewehr 43")
+		BGun("SKS")
+		BGun("M14")
+		BGun("M1 Garand")
+		BGun("FAL Heavy")
+		BGun("M1918 BAR")
+		BGun("G3 Rifle")
+		BGun("M4A1")
+		BGun("FAMAS")
+		BGun("AK47")
+		BGun("MK18 Rifle")
+		BGun("G36C")
+		BGun("SA80 Rifle")
+		BGun("SA80 LSW")
+		BGun("VHS-2")
+		BGun("HK416")
+		BGun("AUG A3")
+		BGun("IA2")
+		BGun("L119A2 Rifle")
+		BGun("SCAR-L Rifle")
+		BGun("M16")
+		BGun("Tavor X95")
+		BGun("XM8")
+		BGun("Remington ACR")
+		BGun("AK12")
+		BGun("MCX Spear")
+		BGun("MP9")
+		BGun("UMP45")
+		BGun("MicroUZI")
+		BGun("MP5")
+		BGun("MAC-10")
+		BGun("PP-19 Bizon")
+		BGun("PPSH")
+		BGun("P90")
+		BGun("KRISS Vector")
+		BGun("MP7")
+		BGun("M17")
+		BGun("M1911")
+		BGun("Glock 19")
+		BGun("G17")
+		BGun("Desert Eagle")
+		BGun("USP 45")
+	end
+})
+WeaponsTab:CreateToggle({
+   Name = "FireRate ",
+   Currentvalue = false,
+   Flag = "Toggle1",
+   Callback = function(Value)
+		while Value == true do
+			local function FR(gun)
+				if game.Players.LocalPlayer.Backpack:FindFirstChild(gun) then
+					game.Players.LocalPlayer.Backpack[gun]:SetAttribute("FireRate", 100000)
+				end
+			end
+
+			FR("RPG")
+			FR("Javelin")
+			FR("Remington MSR")
+			FR("M40 Sniper")
+			FR("Kar98K")
+			FR("M1903 Springfield")
+			FR("Barrett M82")
+			FR("AWP")
+			FR("M200 Intervention")
+			FR("CS5 Sniper")
+			FR("Explosive Sniper")
+			FR("Dragunov SVD")
+			FR("VSS Vintorez")
+			FR("M110 Rifle")
+			FR("Gewehr 43")
+			FR("SKS")
+			FR("M14")
+			FR("M1 Garand")
+			FR("FAL Heavy")
+			FR("M1918 BAR")
+			FR("G3 Rifle")
+			FR("M4A1")
+			FR("FAMAS")
+			FR("AK47")
+			FR("MK18 Rifle")
+			FR("G36C")
+			FR("SA80 Rifle")
+			FR("SA80 LSW")
+			FR("VHS-2")
+			FR("HK416")
+			FR("AUG A3")
+			FR("IA2")
+			FR("L119A2 Rifle")
+			FR("SCAR-L Rifle")
+			FR("M16")
+			FR("Tavor X95")
+			FR("XM8")
+			FR("Remington ACR")
+			FR("AK12")
+			FR("MCX Spear")
+			FR("MP9")
+			FR("UMP45")
+			FR("MicroUZI")
+			FR("MP5")
+			FR("MAC-10")
+			FR("PP-19 Bizon")
+			FR("PPSH")
+			FR("P90")
+			FR("KRISS Vector")
+			FR("MP7")
+			FR("Remington 870")
+			FR("SPAS-12")
+			FR("KSG-12")
+			FR("Saiga-12k")
+			FR("M17")
+			FR("M1911")
+			FR("Glock 19")
+			FR("G17")
+			FR("Desert Eagle")
+			FR("USP 45")
+			wait(0.0001)
+		end
+   end,
+})
+WeaponsTab:CreateButton({
+	Name = "All Weapons Inf Ammo ",
+	Callback = function()
+		local function InfAmmo(gun)
+			if game.ReplicatedStorage.Configurations.ACS_Guns:FindFirstChild(gun) then
+				game.ReplicatedStorage.Configurations.ACS_Guns[gun].Ammo.Value = 999999999999999999999999999999999999999999999999999999
+			end
+		end
+
+		InfAmmo("RPG")
+		InfAmmo("Javelin")
+		InfAmmo("Remington MSR")
+		InfAmmo("M40 Sniper")
+		InfAmmo("Kar98K")
+		InfAmmo("M1903 Springfield")
+		InfAmmo("Barrett M82")
+		InfAmmo("AWP")
+		InfAmmo("M200 Intervention")
+		InfAmmo("CS5 Sniper")
+		InfAmmo("Explosive Sniper")
+		InfAmmo("Dragunov SVD")
+		InfAmmo("VSS Vintorez")
+		InfAmmo("M110 Rifle")
+		InfAmmo("Gewehr 43")
+		InfAmmo("SKS")
+		InfAmmo("M14")
+		InfAmmo("M1 Garand")
+		InfAmmo("FAL Heavy")
+		InfAmmo("M1918 BAR")
+		InfAmmo("G3 Rifle")
+		InfAmmo("M4A1")
+		InfAmmo("FAMAS")
+		InfAmmo("AK47")
+		InfAmmo("MK18 Rifle")
+		InfAmmo("G36C")
+		InfAmmo("SA80 Rifle")
+		InfAmmo("SA80 LSW")
+		InfAmmo("VHS-2")
+		InfAmmo("HK416")
+		InfAmmo("AUG A3")
+		InfAmmo("IA2")
+		InfAmmo("L119A2 Rifle")
+		InfAmmo("SCAR-L Rifle")
+		InfAmmo("M16")
+		InfAmmo("Tavor X95")
+		InfAmmo("XM8")
+		InfAmmo("Remington ACR")
+		InfAmmo("AK12")
+		InfAmmo("MCX Spear")
+		InfAmmo("MP9")
+		InfAmmo("UMP45")
+		InfAmmo("MicroUZI")
+		InfAmmo("MP5")
+		InfAmmo("MAC-10")
+		InfAmmo("PP-19 Bizon")
+		InfAmmo("PPSH")
+		InfAmmo("P90")
+		InfAmmo("KRISS Vector")
+		InfAmmo("MP7")
+		InfAmmo("Remington 870")
+		InfAmmo("SPAS-12")
+		InfAmmo("KSG-12")
+		InfAmmo("Saiga-12k")
+		InfAmmo("M17")
+		InfAmmo("M1911")
+		InfAmmo("Glock 19")
+		InfAmmo("G17")
+		InfAmmo("Desert Eagle")
+		InfAmmo("USP 45")
+	end
+})
+BaseTab:CreateButton({
+	Name = "Delete Door",
+	Callback = function()
+    for k,v in pairs(Workspace.Tycoon.Tycoons:GetChildren()) do
+            for x,y in pairs(v.PurchasedObjects:GetChildren()) do
+                if(y.Name:find("Door") or y.Name:find("Gate")) then y:destroy(); end;
+            end;
+        end;
+    end
+    })
+    local P = game.Players.LocalPlayer
+local M = P:GetMouse()
+local C = workspace.CurrentCamera
+local RS = game:GetService("ReplicatedStorage").RocketSystem.Events
+local RC = 0
+local running = false  
+
+local function FireRocket(TP, TPArt)
+    local D = (TP - C.CFrame.Position).unit * 1000
+    local W = P.Backpack:FindFirstChild("Stinger") or P.Character:FindFirstChild("Stinger")
+    if W then
+         
+        RS.FireRocket:InvokeServer(D, W, W, TP, nil, nil)
+        if TPArt then
+            RS.RocketHit:FireServer(TP, D, W, W, TPArt, "Rocket" .. RC, nil)
+        end
+        RC += 1
+    else
+        
+    end
+end
+
+local function FireRocketsInZ(center, width, height, count)
+    local surfaceY = center.Y
+    local cameraDirection = C.CFrame.LookVector
+    local rightVector = cameraDirection:Cross(Vector3.new(0, 1, 0)).unit
+
+    for i = 0, count do
+        local x = center.X - width / 2 + (width * (i / count))
+        local position = center + rightVector * (x - center.X) + Vector3.new(0, 0, 0)
+        print("Firing rocket at position:", position) 
+        task.spawn(FireRocket, position, M.Target or workspace.Terrain)
+    end
+
+    for i = 0, count do
+        local x = center.X - width / 2 + (width * (i / count))
+        local position = center + rightVector * (x - center.X) + Vector3.new(0, height * (i / count), 0)
+        print("Firing rocket at position:", position) 
+        task.spawn(FireRocket, position, M.Target or workspace.Terrain)
+    end
+
+    for i = 0, count do
+        local x = center.X - width / 2 + (width * (i / count))
+        local position = center + rightVector * (x - center.X) + Vector3.new(0, height, 0)
+        print("Firing rocket at position:", position) 
+        task.spawn(FireRocket, position, M.Target or workspace.Terrain)
+    end
+end
+BOMBTab:CreateToggle({
+    Name = "Bomba Zetka",
+    Default = false,
+    Callback = function(value)
+        running = value
+        if running then
+            
+        else
+            
+        end
+    end
+})
+
+
+M.Button1Down:Connect(function()
+    if running then  
+        local width = 100 
+        local height = 50 
+        local count = 30 
+        local mousePosition = M.Hit.Position
+        local center = mousePosition
+
+        
+        FireRocketsInZ(center, width, height, count)
+    else
+        
+    end
+end)
+
+
+
+
+local P = game.Players.LocalPlayer
+local M = P:GetMouse()
+local C = workspace.CurrentCamera
+local RS = game:GetService("ReplicatedStorage").RocketSystem.Events
+local RC = 0
+local running = false  
+
+local function FireRocket(TP, TPArt)
+    local D = (TP - C.CFrame.Position).unit * 1000
+    local W = P.Backpack:FindFirstChild("Stinger") or P.Character:FindFirstChild("Stinger")
+    
+    if W then
+        
+        RS.FireRocket:InvokeServer(D, W, W, TP, nil, nil)
+        if TPArt then
+            RS.RocketHit:FireServer(TP, D, W, W, TPArt, "Rocket" .. RC, nil)
+        end
+        RC += 1
+    else
+        
+    end
+end
+
+local function FireRocketsInShape(center, width, height, count)
+    local surfaceY = center.Y
+
+    
+    for i = 0, 1 do
+        local angleOffset = i * math.pi  
+        for j = 0, count do
+            local angle = (j / count) * math.pi * 2 
+            local x = center.X + (width / 2) * math.cos(angle + angleOffset) 
+            local z = center.Z + (width / 2) * math.sin(angle + angleOffset)
+            local position = Vector3.new(x, surfaceY, z)  
+            
+            task.spawn(FireRocket, position, M.Target or workspace.Terrain)
+        end
+    end
+    
+   
+    for i = 0, count do
+        local y = surfaceY + height / 2 * (i / count) 
+        local position = Vector3.new(center.X, y, center.Z)  
+        
+        task.spawn(FireRocket, position, M.Target or workspace.Terrain)
+    end
+end
+BOMBTab:CreateToggle({
+    Name = "Bomb Pensil",
+    Callback = function()
+        running = not running  
+        if running then
+            
+        else
+            
+        end
+    end
+})
+
+
+M.Button1Down:Connect(function()
+    if running then  
+        local width = 30  
+        local height = 100  
+        local count = 20 
+
+        local mousePosition = M.Hit.Position
+        local center = Vector3.new(mousePosition.X, mousePosition.Y, mousePosition.Z)
+
+        
+        FireRocketsInShape(center, width, height, count)
+    else
+        
+    end
+end)
+
+local P = game.Players.LocalPlayer
+local M = P:GetMouse()
+local C = workspace.CurrentCamera
+local RS = game:GetService("ReplicatedStorage").RocketSystem.Events
+local RC = 0
+local running = false  
+
+local function FireRocket(TP, TPArt)
+    local D = (TP - C.CFrame.Position).unit * 1000
+    local W = P.Backpack:FindFirstChild("Stinger") or P.Character:FindFirstChild("Stinger")
+    if W then
+        print("Launching rocket to position:", TP) 
+        RS.FireRocket:InvokeServer(D, W, W, TP, nil, nil)
+        if TPArt then
+            RS.RocketHit:FireServer(TP, D, W, W, TPArt, "Rocket" .. RC, nil)
+        end
+        RC += 1
+    else
+        
+    end
+end
+
+local function FireRocketsInV(startPosition, spreadWidth, height, count)
+    local cameraDirection = workspace.CurrentCamera.CFrame.LookVector 
+    local rightVector = cameraDirection:Cross(Vector3.new(0, 1, 0)).unit
+
+    for i = 0, count do
+        local fraction = i / count
+        local xOffset = (-spreadWidth / 2) * fraction 
+        local position = startPosition + rightVector * xOffset + Vector3.new(0, height * fraction, 0) 
+        print("Firing rocket at position (left side):", position)
+        task.spawn(FireRocket, position, M.Target or workspace.Terrain)
+    end
+
+    for i = 0, count do
+        local fraction = i / count
+        local xOffset = (spreadWidth / 2) * fraction 
+        local position = startPosition + rightVector * xOffset + Vector3.new(0, height * fraction, 0) 
+        
+        task.spawn(FireRocket, position, M.Target or workspace.Terrain)
+    end
+end
+BOMBTab:CreateToggle({
+    Name = "Bomb V",
+    Default = false,
+    Callback = function(value)
+        running = value  
+        if running then
+           
+        else
+            
+        end
+    end,
+})
+
+
+M.Button1Down:Connect(function()
+    if running then  
+        local spreadWidth = 100  
+        local height = 50      
+        local count = 30         
+
+        local mousePosition = M.Hit.Position  
+        local startPosition = mousePosition    
+
+        
+        FireRocketsInV(startPosition, spreadWidth, height, count)  
+    else
+        
+    end
+end)
+
+
+local localPlayer = game:GetService("Players").LocalPlayer
+local Cmultiplier = 1
+local isSpeedActive = false
+local isFlyActive = false
+local isNoClipActive = false
+local isFunctionalityEnabled = true
+local flySpeed = 1
+local camera = workspace.CurrentCamera
+local UserInputService = game:GetService("UserInputService")
+local humanoid = nil
+
+
+
+local flyToggleButton = BaseTab:CreateToggle({
+    Name = "Fly",
+    Callback = function()
+        isFlyActive = not isFlyActive
+    end,
+})
+
+local flySpeedSlider = BaseTab:CreateSlider({
+    Name = "Fly Speed",
+    Range = {1, 1000},
+    Increment = 1,
+    Suffix = " units",
+    CurrentValue = flySpeed,
+    Callback = function(value)
+        flySpeed = value
+    end,
+})
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    if isFunctionalityEnabled then
+        if localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            humanoid = localPlayer.Character:FindFirstChild("Humanoid")
+
+            if isFlyActive then
+                local flyDirection = Vector3.zero
+
+                if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                    flyDirection = flyDirection + camera.CFrame.LookVector
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                    flyDirection = flyDirection - camera.CFrame.LookVector
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                    flyDirection = flyDirection - camera.CFrame.RightVector
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                    flyDirection = flyDirection + camera.CFrame.RightVector
+                end
+
+                if flyDirection.Magnitude > 0 then
+                    flyDirection = flyDirection.Unit
+                end
+
+                local newPosition = localPlayer.Character.HumanoidRootPart.Position + flyDirection * flySpeed
+                localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(newPosition)
+                localPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+            end
+
+            if isNoClipActive then
+                for _, v in pairs(localPlayer.Character:GetDescendants()) do
+                    if v:IsA("BasePart") and v.CanCollide then
+                        v.CanCollide = false
+                    end
+                end
+            end
+        end
+    end
+ end)
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local strafeEnabled = false
+local strafeAllowed = true
+local strafeSpeed, strafeRadius = 50, 5
+local strafeMode, targetPlayer = "Horizontal", nil
+
+local function getClosestPlayer()
+    local closestPlayer = nil
+    local closestDistance = math.huge
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local distance = (LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).magnitude
+            if distance < closestDistance then
+                closestDistance = distance
+                closestPlayer = player
+            end
+        end
+    end
+    return closestPlayer
+end
+
+local function startTargetStrafe()
+    if not strafeAllowed then return end
+
+    targetPlayer = getClosestPlayer()
+    if not targetPlayer then
+        warn("No target player found")
+        return
+    end
+end
+
+local function strafeAroundTarget()
+    if not (strafeAllowed and targetPlayer and targetPlayer.Parent) then return end
+
+    local targetPos = targetPlayer.Character.HumanoidRootPart.Position
+    local angle = tick() * (strafeSpeed / 10)
+    local offset = strafeMode == "Horizontal" 
+        and Vector3.new(math.cos(angle) * strafeRadius, 0, math.sin(angle) * strafeRadius)
+        or Vector3.new(math.cos(angle) * strafeRadius, strafeRadius, math.sin(angle) * strafeRadius)
+
+    
+    LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(targetPos + offset))
+end
+
+local function stopTargetStrafe()
+    strafeEnabled, targetPlayer = false, nil
+end
+
+BaseTab:CreateToggle({
+    Name = "Target Strafe",
+    Callback = function()
+        if strafeAllowed then
+            strafeEnabled = not strafeEnabled
+            if strafeEnabled then 
+                startTargetStrafe() 
+            else 
+                stopTargetStrafe() 
+            end
+        end
+    end
+})
+
+BaseTab:CreateSlider({
+    Name = "Strafe Speed",
+    Range = {1, 200},
+    Increment = 1,
+    Suffix = "units",
+    CurrentValue = strafeSpeed,
+    Callback = function(value)
+        strafeSpeed = value
+    end
+})
+
+BaseTab:CreateSlider({
+    Name = "Strafe Radius",
+    Range = {1, 150},
+    Increment = 1,
+    Suffix = "studs",
+    CurrentValue = strafeRadius,
+    Callback = function(value)
+        strafeRadius = value
+    end
+})
+
+RunService.RenderStepped:Connect(function()
+    if strafeEnabled and strafeAllowed then
+        print("Strafing around target")
+        strafeAroundTarget()
+    end
+end)
+
+local function toggleStrafeByKey()
+    if strafeAllowed then
+        strafeEnabled = not strafeEnabled
+        if strafeEnabled then 
+            startTargetStrafe() 
+        else 
+            stopTargetStrafe() 
+        end
+    end
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    if not gameProcessedEvent then
+        if input.KeyCode == Enum.KeyCode.L then
+            toggleStrafeByKey()
+        end
+    end
+end) 
+local masterToggle = true  
+local isRPGSpamEnabled = false  
+local rocketsToFire = 500000  
+local LocalPlayer = game.Players.LocalPlayer  
+local RocketSystem, FireRocket, FireRocketClient
+local rocketNumber = 1  
+local targetHead
+local whitelistedPlayers = {}
+
+
+local function updatePlayerList()
+    local playerList = {}
+    local Players = game:GetService("Players") 
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            table.insert(playerList, player.Name)
+        end
+    end
+    return playerList
+end
+
+local playerListDropdown = SuperSpamTab:CreateDropdown({
+    Name = "Whitelist",
+    Options = updatePlayerList(),
+    MultipleOptions = true,
+    Callback = function(selectedPlayers)
+        whitelistedPlayers = selectedPlayers 
+    end
+})
+
+
+local function isPlayerWhitelisted(playerName)
+    for _, name in ipairs(whitelistedPlayers) do
+        if name == playerName then
+            return true
+        end
+    end
+    return false
+end
+
+
+local function getPlayersInRange(range)
+    local playersInRange = {}
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local distance = (player.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).magnitude
+            if distance <= range then
+                table.insert(playersInRange, player)
+            end
+        end
+    end
+    return playersInRange
+end
+
+
+local function startRPGSpam()
+    if not masterToggle or not isRPGSpamEnabled then return end
+
+    if not RocketSystem then
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        RocketSystem = ReplicatedStorage:WaitForChild("RocketSystem")
+        FireRocket = RocketSystem:WaitForChild("Events"):WaitForChild("FireRocket")
+        FireRocketClient = RocketSystem:WaitForChild("Events"):WaitForChild("FireRocketClient")
+    end
+
+    local function getActiveWeapon()
+        local validWeapons = {"RPG", "Javelin", "Stinger"}
+        for _, weaponName in ipairs(validWeapons) do
+            local weapon = workspace[LocalPlayer.Name]:FindFirstChild(weaponName)
+            if weapon and weapon:IsA("Tool") and weapon.Parent == workspace[LocalPlayer.Name] then
+                return weaponName
+            end
+        end
+        return nil
+    end
+    
+    local activeWeapon = getActiveWeapon()
+    if not activeWeapon then return end
+
+    local playersInRange = getPlayersInRange(40000) 
+
+    for _, targetPlayer in ipairs(playersInRange) do
+        if not isRPGSpamEnabled then return end
+        
+        if isPlayerWhitelisted(targetPlayer.Name) then  
+            continue  
+        end
+
+        local targetPosition = targetPlayer.Character.HumanoidRootPart.Position
+        local directionToTarget = (targetPosition - LocalPlayer.Character.Head.Position).unit
+        targetHead = targetPlayer.Character.Head 
+        for i = 1, 500 do
+        FireRocket:InvokeServer(directionToTarget, workspace[LocalPlayer.Name][activeWeapon], workspace[LocalPlayer.Name][activeWeapon], targetPosition)
+        
+        local RS = game:GetService("ReplicatedStorage").RocketSystem.Events
+        RS.RocketHit:FireServer(
+            targetPosition, 
+            directionToTarget, 
+            workspace[LocalPlayer.Name][activeWeapon],  
+            workspace[LocalPlayer.Name][activeWeapon], 
+            targetHead, 
+            targetHead, 
+            LocalPlayer.Name .. "Rocket" .. rocketNumber 
+        )
+        
+        rocketNumber = rocketNumber + 1 
+    end
+end
+end
+
+game:GetService("RunService").Heartbeat:Connect(function()
+    if isRPGSpamEnabled then
+        startRPGSpam()
+    end
+end)
+
+
+game.Players.PlayerAdded:Connect(function()
+    playerListDropdown:UpdateOptions(updatePlayerList())
+end)
+
+game.Players.PlayerRemoving:Connect(function()
+    playerListDropdown:UpdateOptions(updatePlayerList())
+end)
+
+SuperSpamTab:CreateToggle({
+    Name = "Start SpamRocket",
+    Default = false,
+    Callback = function(value)
+        isRPGSpamEnabled = value
+        if value then
+            startRPGSpam()
+        end
+    end
+})
+local bypassActive = true
+
+settingsTab:CreateToggle({
+    Name = "Bypass", 
+    Default = true, 
+    Callback = function(value)
+        bypassActive = value 
+
+        if bypassActive then
+            
+            warn("Bypass Enabled") 
+
+           
+            task.spawn(function()
+                local g = getinfo or debug.getinfo
+                local d = false
+                local h = {}
+                
+                local x, y
+                
+                setthreadidentity(2)
+
+                for i, v in getgc(true) do
+                    if typeof(v) == "table" then
+                        local a = rawget(v, "Detected")
+                        local b = rawget(v, "Kill")
+                    
+                        if typeof(a) == "function" and not x then
+                            x = a
+                            local o; o = hookfunction(x, function(c, f, n)
+                                if c ~= "_" then
+                                    if d then
+                                        warn(`Adonis AntiCheat flagged\nMethod: {c}\nInfo: {f}`)
+                                    end
+                                end
+                                
+                                return true
+                            end)
+                            table.insert(h, x)
+                        end
+
+                        if rawget(v, "Variables") and rawget(v, "Process") and typeof(b) == "function" and not y then
+                            y = b
+                            local o; o = hookfunction(y, function(f)
+                                if d then
+                                    warn(`Adonis AntiCheat tried to kill (fallback): {f}`)
+                                end
+                            end)
+                            table.insert(h, y)
+                        end
+                    end
+                end
+
+                local o; o = hookfunction(getrenv().debug.info, newcclosure(function(...)
+                    local a, f = ...
+
+                    if x and a == x then
+                        if d then
+                            warn(`zins | adonis bypassed`)
+                        end
+
+                        return coroutine.yield(coroutine.running())
+                    end
+                    
+                    return o(...)
+                end))
+
+                setthreadidentity(7) 
+            end)
+        else
+           
+            warn("Bypass Disabled") 
+            
+        end
+    end
+})
+ScriptsTab:CreateButton({
+     Name = "Inf Yield",
+    Callback = function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+    end
+    })
+    ScriptsTab:CreateButton({
+        Name = "Silent | Aim",
+        Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/zeusXAbsosute/silent/refs/heads/main/silent%20Aim.lua"))()
+        end
+})
+MainTab:CreateButton({
+     Name = "Stinger | not work free ",
+    Callback = function()
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Backpack = LocalPlayer.Backpack
+
+local Mouse = LocalPlayer:GetMouse()
+
+if Backpack:FindFirstChild("Stinger") then
+    local stingerTool = Backpack.Stinger
+
+    local function updateTargetPart()
+        local targetPlayer = nil
+        local closestDistance = math.huge
+
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local distance = (player.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).magnitude
+                if distance < closestDistance then
+                    closestDistance = distance
+                    targetPlayer = player
+                end
+            end
+        end
+
+        if targetPlayer and stingerTool:FindFirstChild("Target") then
+            stingerTool.Target.Value = targetPlayer.Character.HumanoidRootPart
+        end
+    end
+
+    game:GetService("RunService").RenderStepped:Connect(updateTargetPart)
+end
+
+local settings = require(game:GetService("Players").LocalPlayer.Backpack.Stinger.RocketSettings)
+settings.FireRate = math.huge
+end
+})
+MainTab:CreateButton({
+     Name = "Javelin ",
+    Callback = function()
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Backpack = LocalPlayer.Backpack
+
+local Mouse = LocalPlayer:GetMouse()
+
+if Backpack:FindFirstChild("Javelin") then
+    local JavelinTool = Backpack.Javelin
+
+    local function updateTargetPart()
+        local targetPlayer = nil
+        local closestDistance = math.huge
+
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local distance = (player.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).magnitude
+                if distance < closestDistance then
+                    closestDistance = distance
+                    targetPlayer = player
+                end
+            end
+        end
+
+        if targetPlayer and JavelinTool:FindFirstChild("Target") then
+            JavelinTool.Target.Value = targetPlayer.Character.HumanoidRootPart
+        end
+    end
+
+    game:GetService("RunService").RenderStepped:Connect(updateTargetPart)
+end
+game:GetService("ReplicatedStorage").Configurations.ACS_Guns.Javelin.Ammo.Value = 1000^10
+end
+})
